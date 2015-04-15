@@ -99,7 +99,6 @@ class LanguagePack::Ruby < LanguagePack::Base
         install_binaries
         install_node
         install_bower
-        build_bower
         run_bower_install
         run_assets_precompile_rake_task
       end
@@ -638,36 +637,6 @@ ERROR
       run("curl #{BOWER_BASE_URL}/bower-#{bower_version}/node_modules.tar.gz -s -o - | tar xzf -")
       unless $?.success?
         error "Can't install Bower #{bower_version}. You can specify the version listed on http://heroku-buildpack-ruby-bower.s3-website-us-east-1.amazonaws.com/"
-      end
-    end
-  end
-
-  # runs bower to install the dependencies
-  def build_bower
-    error_message = <<ERROR
-Can't install JavaScript dependencies
-
-Bower 1.0.0 released at 2013-07-23
-https://github.com/bower/bower/blob/master/CHANGELOG.md
-
-Check these points:
-* Change from component.json to bower.json
-* bower.json requires 'name' option
-ERROR
-
-    log("bower") do
-      topic("Installing JavaScript dependencies using Bower #{bower_version}")
-
-      load_bower_cache
-
-      pipe("./node_modules/bower/bin/bower install --config.storage.packages=vendor/bower/packages --config.storage.registry=vendor/bower/registry --config.tmp=vendor/bower/tmp 2>&1")
-      if $?.success?
-        log "bower", :status => "success"
-        puts "Cleaning up the bower tmp."
-        FileUtils.rm_rf("vendor/bower/tmp")
-        cache.store "vendor/bower"
-      else
-        error error_message
       end
     end
   end
