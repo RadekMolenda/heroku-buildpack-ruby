@@ -93,6 +93,7 @@ class LanguagePack::Ruby < LanguagePack::Base
         post_bundler
         create_database_yml
         install_binaries
+        run_bower_install
         run_assets_precompile_rake_task
       end
       super
@@ -101,6 +102,16 @@ class LanguagePack::Ruby < LanguagePack::Base
 
 private
 
+  def run_bower_install
+    instrument 'ruby.run_bower_install_rake_task' do
+      require 'benchmark'
+      topic "Running: rake bower:install"
+      time = Benchmark.realtime { pipe("env PATH=$PATH:bin bundle exec rake bower:install 2>&1") }
+      if $?.success?
+        puts "Bower install completed (#{"%.2f" % time}s)"
+      end
+    end
+  end
   # the base PATH environment variable to be used
   # @return [String] the resulting PATH
   def default_path
