@@ -128,6 +128,7 @@ private
     paths         = [
       ENV["PATH"],
       "bin",
+      "vendor/node/bin",
       system_paths,
     ]
     paths.unshift("#{slug_vendor_jvm}/bin") if ruby_version.jruby?
